@@ -62,7 +62,7 @@ public class StudentDTO {
         return new Student(new StudentId(studentDTO.getStudentId()),
                 new StudentName(studentDTO.getStudentName()),
                 new StudentEmail(studentDTO.getStudentEmail()),
-                new IdSubject(studentDTO.getStudentId()));
+                new IdSubject(studentDTO.getSubjectId()));
     }
 
 }
