@@ -1,9 +1,9 @@
 package com.co.ias.reactiveCRUD.domain.model.student;
 
-public class StudentId {
+public class IdSubject {
     private final Long value;
 
-    public StudentId(Long value) {
+    public IdSubject(Long value) {
         this.value = value;
     }
 
