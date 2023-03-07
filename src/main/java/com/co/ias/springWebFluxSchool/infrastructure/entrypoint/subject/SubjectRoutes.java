@@ -13,13 +13,20 @@ import static org.springframework.web.reactive.function.server.RouterFunctions.r
 @Configuration
 public class SubjectRoutes {
 
-    @Value("{PATH_BASE}")
+    @Value("${PATH_BASE}")
     private String PATH_BASE;
-    @Value("{PATH_SUBJECTS}")
+
+    @Value("${PATH_SUBJECTS}")
     private String PATH_SUBJECTS;
+
     @Bean
     public RouterFunction<ServerResponse> subjectsEndPoints(SubjectHandler subjectHandler){
-        return route().POST("/api".concat("/subjects").concat("/new"),accept(MediaType.APPLICATION_JSON),subjectHandler::saveSubject)
+        return route()
+                .POST(PATH_BASE.concat(PATH_SUBJECTS).concat("/new"), accept(MediaType.APPLICATION_JSON), subjectHandler::saveSubject)
+                .GET(PATH_BASE.concat(PATH_SUBJECTS), accept(MediaType.APPLICATION_JSON), subjectHandler::getSubjects)
+                .GET(PATH_BASE.concat(PATH_SUBJECTS).concat("/{id}"), accept(MediaType.APPLICATION_JSON), subjectHandler::getSubjectById)
+                .PUT(PATH_BASE.concat(PATH_SUBJECTS).concat("/{id}"), accept(MediaType.APPLICATION_JSON), subjectHandler::updateSubject)
                 .build();
     }
+
 }
