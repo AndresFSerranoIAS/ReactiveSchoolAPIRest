@@ -32,4 +32,15 @@ public class SubjectRepositoryAdapter implements ISubjectRepository {
     public Mono<Subject> updateSubject(Mono<Subject> subjectMono, Long id) {
         return subjectMono.map(SubjectDBO::fromDomain).flatMap(iSubjectAdapterRepository::save).map(SubjectDBO::toDomain);
     }
+
+    @Override
+    public Mono<Boolean> deleteSubject(Long id) {
+        return iSubjectAdapterRepository.existsById(id)
+                .flatMap(exists -> {
+                    if (!exists) {
+                        return Mono.just(false);
+                    }
+                    return iSubjectAdapterRepository.deleteById(id).thenReturn(true);
+                });
+    }
 }

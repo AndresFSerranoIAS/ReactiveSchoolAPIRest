@@ -9,4 +9,6 @@ public interface ISubjectRepository {
     Flux<Subject> getSubjects();
     Mono<Subject> getSubjectById(Long id);
     Mono<Subject> updateSubject(Mono<Subject> subjectMono,Long id);
+
+    Mono<Boolean> deleteSubject(Long id);
 }

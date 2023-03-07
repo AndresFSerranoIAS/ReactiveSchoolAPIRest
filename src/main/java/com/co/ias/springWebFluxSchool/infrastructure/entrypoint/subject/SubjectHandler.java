@@ -82,4 +82,24 @@ public class SubjectHandler {
                         .bodyValue("No se ha podido acceder a la base de datos"));
     }
 
+    public Mono<ServerResponse> deleteSubject(ServerRequest request) {
+        Long id = Long.valueOf(request.pathVariable("id"));
+        Mono<Boolean> resultMono = subjectUseCase.deleteSubject(id);
+        return resultMono
+                .flatMap(result -> {
+                    if (!result) {
+                        return ServerResponse
+                                .status(HttpStatus.NOT_FOUND)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .bodyValue(String.format("No se ha encontrado ninguna materia asociada al ID %d",id));
+                    }
+                    return ServerResponse
+                            .status(HttpStatus.OK)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .bodyValue(String.format("Se ha borrado correctamente la materia con ID %d",id));
+                })
+                .onErrorResume(throwable -> ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue("No se ha podido acceder a la base de datos"));
+    }
 }

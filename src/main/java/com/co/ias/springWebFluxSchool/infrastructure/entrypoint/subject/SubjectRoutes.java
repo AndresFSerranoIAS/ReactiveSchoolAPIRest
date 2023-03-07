@@ -26,6 +26,7 @@ public class SubjectRoutes {
                 .GET(PATH_BASE.concat(PATH_SUBJECTS), accept(MediaType.APPLICATION_JSON), subjectHandler::getSubjects)
                 .GET(PATH_BASE.concat(PATH_SUBJECTS).concat("/{id}"), accept(MediaType.APPLICATION_JSON), subjectHandler::getSubjectById)
                 .PUT(PATH_BASE.concat(PATH_SUBJECTS).concat("/{id}"), accept(MediaType.APPLICATION_JSON), subjectHandler::updateSubject)
+                .DELETE(PATH_BASE.concat(PATH_SUBJECTS).concat("/{id}"), accept(MediaType.APPLICATION_JSON), subjectHandler::deleteSubject)
                 .build();
     }
 

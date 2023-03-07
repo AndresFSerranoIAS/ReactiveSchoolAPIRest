@@ -36,4 +36,10 @@ public class SubjectUseCase {
                 }));
         return iSubjectRepository.saveSubject(updatedSubjectMono);
     }
+
+    public Mono<Boolean> deleteSubject(Long id) {
+        return iSubjectRepository.getSubjectById(id)
+                .flatMap(existingSubject -> iSubjectRepository.deleteSubject(id).thenReturn(true))
+                .defaultIfEmpty(false);
+    }
 }
