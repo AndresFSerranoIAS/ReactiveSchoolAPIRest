@@ -26,9 +26,7 @@ public class SubjectHandler {
         this.subjectUseCase = subjectUseCase;
     }
     public Mono<ServerResponse> saveSubject(ServerRequest request) {
-        Mono<SubjectDTO> subjectDTOMono = request.bodyToMono(SubjectDTO.class);
-
-        return subjectUseCase.saveSubject(subjectDTOMono.map(SubjectDTO::toDomain))
+        return subjectUseCase.saveSubject(request.bodyToMono(SubjectDTO.class).map(SubjectDTO::toDomain))
                 .flatMap(subject -> ServerResponse.status(HttpStatus.CREATED)
                         .contentType(MediaType.APPLICATION_JSON)
                         .bodyValue("La materia " + subject.getSubjectName().getValue() + " se ha agregado satisfactoriamente a la base de datos."))
@@ -37,13 +35,15 @@ public class SubjectHandler {
                 .switchIfEmpty(ServerResponse.badRequest().bodyValue("Error: Los campos de la materia no pueden ir nulos"));
     }
     public Mono<ServerResponse> getSubjects(ServerRequest request) {
-        Flux<Subject> subjectFlux = subjectUseCase.getSubjects();
-        Flux<SubjectDTO> subjectDTOFlux = subjectFlux.map(SubjectDTO::fromDomain);
-        return subjectDTOFlux.collectList()
-                .switchIfEmpty(Mono.just(Collections.emptyList()))
+        return subjectUseCase.getSubjects()
+                .map(SubjectDTO::fromDomain)
+                .collectList()
                 .flatMap(subjectDTOs -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON)
                         .bodyValue(subjectDTOs))
+                .switchIfEmpty(ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(Collections.emptyList()))
                 .onErrorResume(throwable -> ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
                         .contentType(MediaType.APPLICATION_JSON)
                         .bodyValue("No se ha podido acceder a la base de datos"));
@@ -51,8 +51,7 @@ public class SubjectHandler {
 
     public Mono<ServerResponse> getSubjectById(ServerRequest request) {
         Long id = Long.valueOf(request.pathVariable("id"));
-        Mono<Subject> subjectMono = subjectUseCase.getSubjectById(id);
-        return subjectMono
+        return subjectUseCase.getSubjectById(id)
                 .flatMap(subject -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON)
                         .bodyValue(SubjectDTO.fromDomain(subject)))
@@ -66,11 +65,9 @@ public class SubjectHandler {
 
     public Mono<ServerResponse> updateSubject(ServerRequest request) {
         Long id = Long.valueOf(request.pathVariable("id"));
-        Mono<Subject> subjectMono = request.bodyToMono(SubjectDTO.class)
+        return request.bodyToMono(SubjectDTO.class)
                 .map(SubjectDTO::toDomain)
-                .flatMap(subject -> subjectUseCase.updateSubject(Mono.just(subject), id));
-
-        return subjectMono
+                .flatMap(subject -> subjectUseCase.updateSubject(Mono.just(subject), id))
                 .flatMap(subject -> ServerResponse.ok()
                         .contentType(MediaType.APPLICATION_JSON)
                         .bodyValue(SubjectDTO.fromDomain(subject)))
@@ -84,8 +81,7 @@ public class SubjectHandler {
 
     public Mono<ServerResponse> deleteSubject(ServerRequest request) {
         Long id = Long.valueOf(request.pathVariable("id"));
-        Mono<Boolean> resultMono = subjectUseCase.deleteSubject(id);
-        return resultMono
+        return subjectUseCase.deleteSubject(id)
                 .flatMap(result -> {
                     if (!result) {
                         return ServerResponse

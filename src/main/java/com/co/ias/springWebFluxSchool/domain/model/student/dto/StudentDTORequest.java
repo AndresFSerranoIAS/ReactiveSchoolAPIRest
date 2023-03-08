@@ -51,13 +51,13 @@ public class StudentDTORequest {
         this.subjectId = subjectId;
     }
 
-    private StudentDTORequest fromDomain(StudentRequest student){
+    public static StudentDTORequest fromDomain(StudentRequest student){
         return new StudentDTORequest(student.getStudentId().getValue(),
                 student.getStudentName().getValue(),
                 student.getStudentEmail().getValue(),
                 student.getSubjectId().getValue());
     }
-    private StudentRequest toDomain(StudentDTORequest studentDTORequest){
+    public static StudentRequest toDomain(StudentDTORequest studentDTORequest){
         return new StudentRequest(new StudentId(studentDTORequest.getStudentId()),
                 new StudentName(studentDTORequest.getStudentName()),
                 new StudentEmail(studentDTORequest.getStudentEmail()),

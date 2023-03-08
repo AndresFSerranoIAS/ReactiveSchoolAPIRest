@@ -26,15 +26,12 @@ public class SubjectUseCase {
         return iSubjectRepository.getSubjectById(id);
     }
     public Mono<Subject> updateSubject(Mono<Subject> subjectMono, Long id) {
-        Mono<Subject> existingSubjectMono = iSubjectRepository.getSubjectById(id);
-        Mono<Subject> updatedSubjectMono = existingSubjectMono
-                .flatMap(existingSubject -> subjectMono.map(newSubject -> {
-                    Subject updatedSubject = new Subject(
-                            new SubjectId(id),
-                            new SubjectName(newSubject.getSubjectName().getValue()));
-                    return updatedSubject;
-                }));
-        return iSubjectRepository.saveSubject(updatedSubjectMono);
+        return iSubjectRepository.saveSubject(iSubjectRepository.getSubjectById(id).flatMap(existingSubject -> subjectMono.map(newSubject -> {
+            Subject updatedSubject = new Subject(
+                    new SubjectId(id),
+                    new SubjectName(newSubject.getSubjectName().getValue()));
+            return updatedSubject;
+        })).switchIfEmpty(Mono.empty()));
     }
 
     public Mono<Boolean> deleteSubject(Long id) {
@@ -42,4 +39,5 @@ public class SubjectUseCase {
                 .flatMap(existingSubject -> iSubjectRepository.deleteSubject(id).thenReturn(true))
                 .defaultIfEmpty(false);
     }
+
 }

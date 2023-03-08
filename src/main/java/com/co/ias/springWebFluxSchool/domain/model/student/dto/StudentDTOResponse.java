@@ -1,6 +1,7 @@
 package com.co.ias.springWebFluxSchool.domain.model.student.dto;
 
 import com.co.ias.springWebFluxSchool.domain.model.student.StudentRequest;
+import com.co.ias.springWebFluxSchool.domain.model.student.StudentResponse;
 import com.co.ias.springWebFluxSchool.domain.model.subject.dto.SubjectDTO;
 
 public class StudentDTOResponse {
@@ -8,52 +9,35 @@ public class StudentDTOResponse {
 
     private String studentName;
     private String studentEmail;
-    private SubjectDTO subjectDTO;
+    private SubjectDTO subject;
 
-    public StudentDTOResponse(Long studentId, String studentName, String studentEmail, SubjectDTO subjectDTO) {
+    public StudentDTOResponse(Long studentId, String studentName, String studentEmail, SubjectDTO subject) {
         this.studentId = studentId;
         this.studentName = studentName;
         this.studentEmail = studentEmail;
-        this.subjectDTO = subjectDTO;
+        this.subject = subject;
     }
 
     public Long getStudentId() {
         return studentId;
     }
 
-    public void setStudentId(Long studentId) {
-        this.studentId = studentId;
-    }
-
     public String getStudentName() {
         return studentName;
-    }
-
-    public void setStudentName(String studentName) {
-        this.studentName = studentName;
     }
 
     public String getStudentEmail() {
         return studentEmail;
     }
 
-    public void setStudentEmail(String studentEmail) {
-        this.studentEmail = studentEmail;
+    public SubjectDTO getSubject() {
+        return subject;
     }
 
-    public SubjectDTO getSubjectDTO() {
-        return subjectDTO;
-    }
-
-    public void setSubjectDTO(SubjectDTO subjectDTO) {
-        this.subjectDTO = subjectDTO;
-    }
-
-    private StudentDTOResponse fromDomain(StudentRequest student){
-        return new StudentDTOResponse(student.getStudentId().getValue(),
-                student.getStudentName().getValue(),
-                student.getStudentEmail().getValue(),
-null
-                );
+    public static StudentDTOResponse fromDomain(StudentResponse studentResponse){
+        return new StudentDTOResponse(studentResponse.getStudentId().getValue(),
+                studentResponse.getStudentName().getValue(),
+                studentResponse.getStudentEmail().getValue(),
+                SubjectDTO.fromDomain(studentResponse.getSubject()));
     }
 }
