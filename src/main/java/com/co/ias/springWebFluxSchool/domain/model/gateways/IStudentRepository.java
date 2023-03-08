@@ -15,4 +15,12 @@ public interface IStudentRepository {
 
     Mono<StudentRequest> updateStudent(Mono<StudentRequest>studentRequestMono);
 
+    Mono<Boolean> deleteStudent(Long id);
+
+    Mono<StudentRequest> findStudentById(Long id);
+
+    Flux<StudentResponse> findStudentsBySubjectId(Long id);
+
+    Flux<StudentRequest> findAllStudentsInDB();
+
 }

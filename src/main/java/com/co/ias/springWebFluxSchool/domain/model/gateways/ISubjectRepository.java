@@ -11,4 +11,5 @@ public interface ISubjectRepository {
     Mono<Subject> updateSubject(Mono<Subject> subjectMono,Long id);
 
     Mono<Boolean> deleteSubject(Long id);
+
 }

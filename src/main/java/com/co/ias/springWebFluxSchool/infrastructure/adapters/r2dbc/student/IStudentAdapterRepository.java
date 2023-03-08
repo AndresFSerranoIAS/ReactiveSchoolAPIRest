@@ -11,9 +11,15 @@ public interface IStudentAdapterRepository extends ReactiveCrudRepository<Studen
     @Query("SELECT s.student_name, s.student_id, s.student_email, s.subject_id, sb.subject_name FROM STUDENTS s, SUBJECTS sb WHERE s.subject_id = sb.subject_id AND s.student_id = :id LIMIT 1")
     Mono<StudentDBOResponseCustom> getStudentById(Long id);
 
-    @Query("SELECT s.student_name, s.student_id, s.student_email, s.subject_id, sb.subject_name " +
+    @Query("SELECT DISTINCT s.student_name, s.student_id, s.student_email, s.subject_id, sb.subject_name " +
             "FROM STUDENTS s " +
-            "JOIN SUBJECTS sb ON s.subject_id = sb.subject_id")
+            "JOIN SUBJECTS sb ON s.subject_id = sb.subject_id ")
     Flux<StudentDBOResponseCustom> getAllStudents();
 
+
+    @Query("SELECT DISTINCT s.student_name, s.student_id, s.student_email, s.subject_id, sb.subject_name " +
+            "FROM STUDENTS s " +
+            "JOIN SUBJECTS sb ON s.subject_id = sb.subject_id " +
+            "WHERE s.subject_id = :id")
+    Flux<StudentDBOResponseCustom> findStudentsBySubjectId(Long id);
 }

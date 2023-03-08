@@ -3,8 +3,8 @@ import com.co.ias.springWebFluxSchool.domain.model.student.StudentRequest;
 import com.co.ias.springWebFluxSchool.domain.model.student.dto.StudentDTORequest;
 import com.co.ias.springWebFluxSchool.domain.model.student.dto.StudentDTOResponse;
 import com.co.ias.springWebFluxSchool.domain.usecase.StudentUseCase;
-import com.co.ias.springWebFluxSchool.infrastructure.entrypoint.student.exceptions.StudentNotFoundException;
-import com.co.ias.springWebFluxSchool.infrastructure.entrypoint.student.exceptions.SubjectNotFoundException;
+import com.co.ias.springWebFluxSchool.infrastructure.entrypoint.exceptions.StudentNotFoundException;
+import com.co.ias.springWebFluxSchool.infrastructure.entrypoint.exceptions.SubjectNotFoundException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -74,5 +74,62 @@ public class StudentHandler {
                         .bodyValue(e.getMessage()));
     }
 
+    public Mono<ServerResponse> deleteStudent(ServerRequest request){
+        Long id = Long.valueOf(request.pathVariable("id"));
+        return studentUseCase.deleteStudent(id)
+                .flatMap(result->{
+                    if(!result) {
+                        return ServerResponse
+                                .status(HttpStatus.NOT_FOUND)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .bodyValue(String.format("No se ha encontrado ningún estudiante asociado al ID %d",id));
+                    }
+                    return ServerResponse
+                            .status(HttpStatus.OK)
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .bodyValue(String.format("Se ha borrado correctamente el estudiante con ID %d",id));
+                }).onErrorResume(throwable -> ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue("No se ha podido acceder a la base de datos"));
+    }
+
+    public Mono<ServerResponse> quitSubjectFromStudent(ServerRequest request){
+        Long id = Long.valueOf(request.pathVariable("id"));
+        return studentUseCase.quitSubjectFromStudent(id)
+                .flatMap(studentRequest ->
+                        ServerResponse.status(HttpStatus.OK)
+                                .bodyValue("Se ha desmatriculado el estudiante " + studentRequest.getStudentName().getValue() + " correctamente de la materia cursada"))
+                .onErrorResume(StudentNotFoundException.class, e -> ServerResponse.status(HttpStatus.NOT_FOUND)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(e.getMessage()))
+                .onErrorResume(IllegalArgumentException.class, e -> ServerResponse.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(e.getMessage()));
+    }
+
+    public Mono<ServerResponse> findStudentsBySubjectId(ServerRequest request){
+        Long id = Long.valueOf(request.pathVariable("id"));
+        return studentUseCase.findStudentsBySubjectId(id)
+                .map(StudentDTOResponse::fromDomain)
+                .collectList()
+                .flatMap(studentDTOResponses -> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(studentDTOResponses))
+                .switchIfEmpty(ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(Collections.emptyList()));
+    }
+
+    public Mono<ServerResponse> findAllStudentsInDB(ServerRequest request){
+        return studentUseCase.findAllStudentsInDB()
+                .map(StudentDTORequest::fromDomain)
+                .collectList()
+                .flatMap(studentDTOResponses -> ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(studentDTOResponses))
+                .switchIfEmpty(ServerResponse.ok()
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .bodyValue(Collections.emptyList()));
+    }
 
 }

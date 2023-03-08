@@ -6,7 +6,6 @@ public class StudentRequest {
 
     private final StudentId studentId;
     private final StudentName studentName;
-
     private final StudentEmail studentEmail;
 
     private final SubjectId subjectId;

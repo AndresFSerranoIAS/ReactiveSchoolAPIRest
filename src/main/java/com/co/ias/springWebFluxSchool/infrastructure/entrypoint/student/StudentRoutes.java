@@ -26,6 +26,10 @@ public class StudentRoutes {
                 .GET(PATH_BASE.concat(PATH_STUDENTS).concat("/{id}"),accept(MediaType.APPLICATION_JSON),studentHandler::getStudentById)
                 .GET(PATH_BASE.concat(PATH_STUDENTS).concat("/"),accept(MediaType.APPLICATION_JSON),studentHandler::getAllStudents)
                 .PUT(PATH_BASE.concat(PATH_STUDENTS).concat("/{id}"),accept(MediaType.APPLICATION_JSON),studentHandler::updateStudent)
+                .DELETE(PATH_BASE.concat(PATH_STUDENTS).concat("/{id}"),accept(MediaType.APPLICATION_JSON),studentHandler::deleteStudent)
+                .PUT(PATH_BASE.concat(PATH_STUDENTS).concat("/quit").concat("/{id}"),accept(MediaType.APPLICATION_JSON),studentHandler::quitSubjectFromStudent)
+                .GET(PATH_BASE.concat(PATH_STUDENTS).concat("/list").concat("/{id}"),accept(MediaType.APPLICATION_JSON),studentHandler::findStudentsBySubjectId)
+                .GET(PATH_BASE.concat(PATH_STUDENTS).concat("/all/"),accept(MediaType.APPLICATION_JSON),studentHandler::findAllStudentsInDB)
                 .build();
     }
 }

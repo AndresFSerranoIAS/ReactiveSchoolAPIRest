@@ -31,7 +31,7 @@ public class StudentDBO {
                 studentRequest.getSubjectId().getValue());
     }
     public static StudentRequest toDomain(StudentDBO studentDBO){
-        return new StudentRequest(new StudentId(studentDBO.getSubjectId()),
+        return new StudentRequest(new StudentId(studentDBO.getStudentId()),
                 new StudentName(studentDBO.getStudentName()),
                 new StudentEmail(studentDBO.getStudentEmail()),
                 new SubjectId(studentDBO.getSubjectId()));

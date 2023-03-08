@@ -37,4 +37,31 @@ public class StudentRepositoryAdapter implements IStudentRepository {
     public Mono<StudentRequest> updateStudent(Mono<StudentRequest> studentRequestMono) {
         return studentRequestMono.map(StudentDBO::fromDomain).flatMap(iStudentAdapterRepository::save).map(StudentDBO::toDomain);
     }
+
+    @Override
+    public Mono<Boolean> deleteStudent(Long id) {
+        return iStudentAdapterRepository.existsById(id)
+                .flatMap(exists ->{
+                    if(!exists){
+                        return Mono.just(false);
+                    }
+                    return iStudentAdapterRepository.deleteById(id).thenReturn(true);
+                });
+    }
+
+    @Override
+    public Mono<StudentRequest> findStudentById(Long id) {
+        return iStudentAdapterRepository.findById(id).map(StudentDBO::toDomain);
+    }
+
+    @Override
+    public Flux<StudentResponse> findStudentsBySubjectId(Long id) {
+        return iStudentAdapterRepository.findStudentsBySubjectId(id).map(StudentDBOResponseCustom::toDomain);
+    }
+
+    @Override
+    public Flux<StudentRequest> findAllStudentsInDB() {
+        return iStudentAdapterRepository.findAll().map(StudentDBO::toDomain);
+    }
+
 }
