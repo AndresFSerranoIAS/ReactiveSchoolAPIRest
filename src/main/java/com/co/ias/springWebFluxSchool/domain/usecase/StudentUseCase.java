@@ -41,7 +41,7 @@ public class StudentUseCase {
     }
 
     public Mono<StudentRequest> updateStudent(Mono<StudentRequest> studentRequestMono, Long id) {
-        return iStudentRepository.getStudentById(id)
+        return iStudentRepository.findStudentById(id)
                 .switchIfEmpty(Mono.error(new StudentNotFoundException("No se ha encontrado ningún estudiante con el ID " + id)))
                 .flatMap(existingStudent ->
                                 studentRequestMono.flatMap(updatedStudent ->
